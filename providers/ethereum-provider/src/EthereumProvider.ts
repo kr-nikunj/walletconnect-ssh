@@ -10,7 +10,6 @@ import {
 } from "./types";
 import { Metadata, Namespace, UniversalProvider } from "@walletconnect/universal-provider";
 import { SessionTypes, SignClientTypes } from "@walletconnect/types";
-import { JsonRpcResult } from "@walletconnect/jsonrpc-types";
 import {
   STORAGE_KEY,
   REQUIRED_METHODS,
@@ -242,7 +241,7 @@ export class EthereumProvider implements IEthereumProvider {
 
   public sendAsync(
     args: RequestArguments,
-    callback: (error: Error | null, response: JsonRpcResult) => void,
+    callback: (error: Error | null, response: any) => void,
   ): void {
     this.signer.sendAsync(args, callback, this.formatChainId(this.chainId));
   }
@@ -296,9 +295,16 @@ export class EthereumProvider implements IEthereumProvider {
               }),
               pairingTopic: opts?.pairingTopic,
             })
-            .then((session) => {
-              resolve(session);
-            })
+            .then(
+              (
+                session:
+                  | SessionTypes.Struct
+                  | PromiseLike<SessionTypes.Struct | undefined>
+                  | undefined,
+              ) => {
+                resolve(session);
+              },
+            )
             .catch((error: Error) => {
               reject(new Error(error.message));
             });

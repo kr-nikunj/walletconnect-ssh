@@ -1,6 +1,5 @@
 import SignClient, { PROPOSAL_EXPIRY_MESSAGE } from "@walletconnect/sign-client";
 import { SessionTypes } from "@walletconnect/types";
-import { JsonRpcResult } from "@walletconnect/jsonrpc-types";
 import { getSdkError, isValidArray, parseNamespaceKey } from "@walletconnect/utils";
 import { getDefaultLoggerOptions, Logger, pino } from "@walletconnect/logger";
 import {
@@ -35,7 +34,6 @@ import {
 
 import { RELAY_URL, LOGGER, STORAGE, PROVIDER_EVENTS } from "./constants";
 import EventEmitter from "events";
-import { formatJsonRpcResult } from "@walletconnect/jsonrpc-utils";
 
 export class UniversalProvider implements IUniversalProvider {
   public client!: SignClient;
@@ -89,12 +87,11 @@ export class UniversalProvider implements IUniversalProvider {
 
   public sendAsync(
     args: RequestArguments,
-    callback: (error: Error | null, response: JsonRpcResult) => void,
+    callback: (error: Error | null, response: any) => void,
     chain?: string | undefined,
   ): void {
-    const id = new Date().getTime();
     this.request(args, chain)
-      .then((response) => callback(null, formatJsonRpcResult(id, response)))
+      .then((response) => callback(null, response))
       .catch((error) => callback(error, undefined as any));
   }
 
